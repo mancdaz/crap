@@ -37,3 +37,6 @@ nosetests.xml
 
 .gitignore
 *.gz
+
+# vim
+.*.swp

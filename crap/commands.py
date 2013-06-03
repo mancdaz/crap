@@ -7,6 +7,8 @@ from cliff.show import ShowOne
 from cliff.lister import Lister
 
 class BaseShowCommand(ShowOne):
+    ''' The base show command class implemented by defect-show, task-show
+    story-show '''
 
     log = logging.getLogger(__name__)
 
@@ -23,8 +25,9 @@ class BaseShowCommand(ShowOne):
 
         FormattedID = parsed_args.artifact
 
-        # get the rally connection object
-        rally = utils.get_rally_connection()
+        # get the rally connection object (note this gets initialised in the
+        # initialize_app call in the main App class (Crap)
+        rally = self.app.rally
 
         # ensure we have a valid FormattedID
         if not re.match(rally.FORMATTED_ID_PATTERN, FormattedID):

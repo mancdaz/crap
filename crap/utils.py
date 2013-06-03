@@ -1,25 +1,14 @@
 from pyral import Rally
-import logging
 import textwrap
-import os
 
-def get_rally_connection():
-
-        SERVER = os.environ.get('RALLY_SERVER', 'rally1.rallydev.com')
-        #SERVER = 'rally1.rallydev.com'
-        USER = os.environ.get('RALLY_USER')
-        PASSWORD = os.environ.get('RALLY_PASS')
-        PROJECT = os.environ.get('RALLY_PROJECT')
-
-        # quieten down the logging from requests that is used by pyral
-        requests_logger = logging.getLogger('requests')
-        requests_logger.setLevel(logging.WARNING)
+def get_rally_connection(USER, PASSWORD, PROJECT, SERVER='rally1.rallydev.com'):
+    ''' return a rally connection object '''
 
         # get the rally connection object
-        rally = Rally(SERVER, USER, PASSWORD, project=PROJECT)
-        rally.enableLogging('/tmp/rally.log')
+    rally = Rally(SERVER, USER, PASSWORD, project=PROJECT)
+    rally.enableLogging('/tmp/rally.log')
 
-        return rally
+    return rally
 
 def get_rally_artifact_obj(rally_connection_obj, artifact_type, FormattedID):
     ''' return a rally artifact object of type 'artifact_type' '''

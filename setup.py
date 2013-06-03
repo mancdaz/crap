@@ -48,7 +48,7 @@ setup(
     scripts=[],
 
     provides=[],
-    install_requires=['distribute', 'cliff', 'pyral'],
+    install_requires=['distribute', 'cliff', 'pyral', 'requests==0.9.3'],
 
     namespace_packages=[],
     packages=find_packages(),
@@ -59,7 +59,10 @@ setup(
             'crap = crap.main:main'
             ],
         'cliff.crap': [
-            'simple = crap.simple:Simple',
+            'task-show = crap.task:Show',
+            'defect-show = crap.defect:Show',
+            'story-show = crap.story:Show',
+            'story-list = crap.story:List',
 #            'two_part = cliffdemo.simple:Simple',
 #            'error = cliffdemo.simple:Error',
 #            'list files = cliffdemo.list:Files',
