@@ -9,6 +9,7 @@ from crap import utils
 
 
 VERSION = '0.1'
+RALLY_API_VERSION = '1.43'
 
 def env(*vars, **kwargs):
     """Search for the first defined of possibly many env vars
@@ -37,41 +38,41 @@ class Crap(App):
                 )
 
 
-        def build_option_parser(self, description, version):
-            parser = super(Crap, self).build_option_parser(
-                    description,
-                    version,
-                    {"conflict_handler": 'resolve'})
+    def build_option_parser(self, description, version):
+        parser = super(Crap, self).build_option_parser(
+                description,
+                version,
+                {"conflict_handler": 'resolve'})
 
-            # Global arguments
-            parser.add_argument(
-                '-d', '--debug',
-                action='store_true',
-                default=False,
-                dest='debug',
-                help='enable debug output')
-            parser.add_argument(
-                '--rally-server',
-                default=env('RALLY_SERVER'),
-                dest='rally_server',
-                help='url of the rally server (env: RALLY_SERVER)')
-            parser.add_argument(
-                '--rally-username',
-                default=env('RALLY_USERNAME'),
-                dest='rally_username',
-                help='rally username (env: RALLY_USERNAME)')
-            parser.add_argument(
-                '--rally-password',
-                default=env('RALLY_PASSWORD'),
-                dest='rally_password',
-                help='rally password (env: RALLY_PASSWORD')
-            parser.add_argument(
-                '--rally-project',
-                default=env('RALLY_PROJECT'),
-                dest='rally_project',
-                help='rally project (env: RALLY_PROJECT)')
+        # Global arguments
+        parser.add_argument(
+            '-d', '--debug',
+            action='store_true',
+            default=False,
+            dest='debug',
+            help='enable debug output')
+        parser.add_argument(
+            '--rally-server',
+            default=env('RALLY_SERVER'),
+            dest='rally_server',
+            help='url of the rally server (env: RALLY_SERVER)')
+        parser.add_argument(
+            '--rally-username',
+            default=env('RALLY_USERNAME'),
+            dest='rally_username',
+            help='rally username (env: RALLY_USERNAME)')
+        parser.add_argument(
+            '--rally-password',
+            default=env('RALLY_PASSWORD'),
+            dest='rally_password',
+            help='rally password (env: RALLY_PASSWORD')
+        parser.add_argument(
+            '--rally-project',
+            default=env('RALLY_PROJECT'),
+            dest='rally_project',
+            help='rally project (env: RALLY_PROJECT)')
 
-            return parser
+        return parser
 
 
     def initialize_app(self, argv):
@@ -88,12 +89,13 @@ class Crap(App):
                 self.options.rally_username,
                 self.options.rally_password,
                 self.options.rally_project,
+                RALLY_API_VERSION,
                 self.options.rally_server)
 
 
 
-        def prepare_to_run_command(self, cmd):
-            self.log.debug('prepare_to_run_command %s', cmd.__class__.__name__)
+    def prepare_to_run_command(self, cmd):
+        self.log.debug('prepare_to_run_command %s', cmd.__class__.__name__)
 
     def clean_up(self, cmd, result, err):
         self.log.debug('clean_up %s', cmd.__class__.__name__)

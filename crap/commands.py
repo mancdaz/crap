@@ -52,9 +52,14 @@ class BaseShowCommand(ShowOne):
         if hasattr(artifact_obj, 'Tasks'):
             tasks = '\n'.join(['%-7s: %s' % (s.FormattedID,  utils.strip_html(s.Name)) for s in artifact_obj.Tasks])
 
+        if self.artifact_type == 'Story':
+            state = artifact_obj.ScheduleState
+        else:
+            state = artifact_obj.State
+
         # build the return data
-        columns = ['Name', 'ID', 'Description', 'Tasks']
-        data = [name, FormattedID, desc, tasks]
+        columns = ['Name', 'ID', 'Description', 'State', 'Tasks']
+        data = [name, FormattedID, desc, state , tasks]
 
         return (columns, data)
 
@@ -62,39 +67,46 @@ class BaseListCommand(Lister):
     ''' The base list command class implemented by defect-list, task-list
     story-list '''
 
+    log = logging.getLogger(__name__)
+
     def __init__(self, app, app_args, artifact_type):
         super(BaseListCommand, self).__init__(app, app_args)
         self.artifact_type = artifact_type
 
     def get_parser(self, prog_name):
+
         parser = super(BaseListCommand, self).get_parser(prog_name)
         parser.add_argument(
-            'artifact',
-            nargs='?'
-            )
-        parser.add_argument(
-            '-s', '--state',
+            '-l', '--limit',
             nargs='?',
-            const='Open',
-            default='Open',
-            help='The state of the artifacts to list (Open, Closed, Blocked)'
+            const='Limit',
+            default='20',
+            help='Number of results to show'
             )
         return parser
 
-    def take_action(self, parsed_args):
-
-        state = parsed_args.state
-
-        # get the rally connection object
-        rally = utils.get_rally_connection()
-
-        # do the search
-        artifacts = utils.get_rally_list_obj(rally, self.artifact_type, state='%s' % state)
-
-        # now we have an object containing the search results, we need to
-        # get the good stuff out
-        data = [(artifact.FormattedID, artifact.Name) for artifact in artifacts]
-
-        columns = ['ID', 'Name']
-
-        return (columns, data)
+#    def take_action(self, parsed_args):
+#
+#        state = parsed_args.state
+#        print state
+#
+#        # get the rally connection object (note this gets initialised in the
+#        # initialize_app call in the main App class (Crap)
+#        rally = self.app.rally
+#        query = None
+#
+#        if state.lower() is 'open':
+#            query = 'State != Completed'
+#        if state.lower() is 'closed':
+#            query = 'State != Open'
+#
+#        # do the search
+#        artifacts = utils.do_rally_query(rally, self.artifact_type, query=query)
+#
+#        # now we have an object containing the search results, we need to
+#        # get the good stuff out
+#        data = [(artifact.FormattedID, artifact.Name) for artifact in artifacts]
+#
+#        columns = ['ID', 'Name']
+#
+#        return (columns, data)

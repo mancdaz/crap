@@ -60,7 +60,9 @@ setup(
             ],
         'cliff.crap': [
             'task-show = crap.task:Show',
+            'task-list = crap.task:List',
             'defect-show = crap.defect:Show',
+            'defect-list = crap.defect:List',
             'story-show = crap.story:Show',
             'story-list = crap.story:List',
 #            'two_part = cliffdemo.simple:Simple',
