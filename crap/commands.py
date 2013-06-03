@@ -35,7 +35,8 @@ class BaseShowCommand(ShowOne):
             sys.exit(1)
 
         # get the rally artifact object
-        artifact_obj = utils.get_rally_artifact_obj(rally, self.artifact_type, FormattedID)
+        query = 'FormattedID = %s' % FormattedID
+        artifact_obj = utils.do_rally_query(rally, self.artifact_type, query=query, fetch=True)
 
         # did we get a valid artifact? If no name, assume not
         try:
@@ -59,7 +60,7 @@ class BaseShowCommand(ShowOne):
 
         # build the return data
         columns = ['Name', 'ID', 'Description', 'State', 'Tasks']
-        data = [name, FormattedID, desc, state , tasks]
+        data = [name, artifact_obj.FormattedID, desc, state ,tasks]
 
         return (columns, data)
 
@@ -72,6 +73,7 @@ class BaseListCommand(Lister):
     def __init__(self, app, app_args, artifact_type):
         super(BaseListCommand, self).__init__(app, app_args)
         self.artifact_type = artifact_type
+        self.limit = None
 
     def get_parser(self, prog_name):
 
@@ -85,8 +87,18 @@ class BaseListCommand(Lister):
             )
         return parser
 
-#    def take_action(self, parsed_args):
-#
+    def take_action(self, parsed_args):
+
+        self.limit = parsed_args.limit
+
+        if self.limit == 'all':
+            self.limit=None
+        else:
+            try:
+                self.limit = int(parsed_args.limit)
+            except:
+                self.log.warning('limit must be a number')
+                sys.exit(1)
 #        state = parsed_args.state
 #        print state
 #
