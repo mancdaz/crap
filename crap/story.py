@@ -1,5 +1,3 @@
-import sys
-
 from crap.commands import BaseShowCommand
 from crap.commands import BaseListCommand
 from crap import utils
@@ -34,46 +32,47 @@ class List(BaseListCommand):
 
     def take_action(self, parsed_args):
 
-        state = parsed_args.state.lower()
-        limit = parsed_args.limit
+        super(List, self).take_action(parsed_args)
 
-        if limit == 'all':
-            limit=None
-        else:
-            try:
-                limit = int(parsed_args.limit)
-            except:
-                self.log.warning('limit must be a number')
-                sys.exit(1)
+        # has to be assigned here since it is not available at the time the
+        # parent class is constructed
+        state = parsed_args.state.lower()
+        # can use directly from the parent class since it is parsed there
+        limit = self.limit
 
         # get the rally connection object (note this gets initialised in the
         # initialize_app call in the main App class (Crap)
         rally = self.app.rally
-        query = None
 
         # validate passed in state argument
         if state.lower() not in ['open', 'closed', 'defined', 'in-progress',
                 'waiting for gate', 'completed', 'accepted']:
-            self.log.debug('unknown state: %s' % state)
+            self.log.info('unknown state: %s' % state)
+            raise RuntimeError()
 
         # build query
+        query = None
         if state == 'open':
-            query = '((ScheduleState = Defined) OR (ScheduleState = In-Progress))'
+            query = '((ScheduleState = Defined) OR '\
+            '(ScheduleState = In-Progress))'
         elif state == 'closed':
-            query = '((ScheduleState != Defined) AND (ScheduleState != In-Progress))'
+            query = '((ScheduleState != Defined) AND '\
+            '(ScheduleState != In-Progress))'
         else:
             query = '(ScheduleState = %s)' % state.title()
 
-
+        # some debug output
         self.log.debug('using query: %s' % query)
-        self.log.debug('showing first %s results' % limit) 
+        if limit: self.log.debug('showing first %s results' % limit)
 
         # do the search
-        artifacts = utils.do_rally_query(rally, self.artifact_type, query=query, limit=limit)
+        artifacts = utils.do_rally_query(
+            rally, self.artifact_type, query=query, limit=limit, fetch=True)
 
         # now we have an object containing the search results, we need to
         # get the good stuff out
-        data = [(artifact.FormattedID, utils.strip_html(artifact.Name), artifact.ScheduleState) for artifact in artifacts]
+        data = [(artifact.FormattedID, utils.strip_html(artifact.Name),
+            artifact.ScheduleState) for artifact in artifacts]
 
         columns = ['ID', 'Name', 'ScheduleState']
 
