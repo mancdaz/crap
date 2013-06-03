@@ -16,15 +16,13 @@ def get_rally_artifact_obj(rally_connection_obj, artifact_type, FormattedID):
     artifact_obj = rally_connection_obj.get(artifact_type, query="FormattedID = %s" % FormattedID, instance=True)
     return artifact_obj
 
-def get_rally_list_obj(rally_connection_obj, artifact_type, state='Open'):
-    ''' return a rally object containing a list of artifacts of that type '''
-
-    artifact_objs = rally_connection_obj.get(artifact_type, query="State = %s" % state, instance=True)
-    return artifact_objs
-
-def do_rally_query(rally_connection_obj, artifact_type, query=None, limit=None):
+def do_rally_query(
+        rally_connection_obj, artifact_type, query=None, limit=None, **kwargs):
     ''' perform a query against the rally api and return the result object '''
-    query_obj = rally_connection_obj.get(artifact_type, query=query, limit=limit)
+
+    query_obj = rally_connection_obj.get(
+        artifact_type, query=query, limit=limit, instance=True, **kwargs)
+
     return query_obj
 
 def strip_html(text_to_clean):
