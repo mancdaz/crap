@@ -49,18 +49,45 @@ class BaseShowCommand(ShowOne):
         desc = utils.strip_html(str(artifact_obj.Description))
 
         # get associated tasks by FormattedID and Name
-        tasks = None
-        if hasattr(artifact_obj, 'Tasks'):
+        try:
             tasks = '\n'.join(['%-7s: %s' % (s.FormattedID,  utils.strip_html(s.Name)) for s in artifact_obj.Tasks])
+        except AttributeError:
+            tasks = None
 
-        if self.artifact_type == 'Story':
-            state = artifact_obj.ScheduleState
-        else:
+        # Stories don't have 'State' Attribute
+        try:
             state = artifact_obj.State
+        except AttributeError:
+            state = None
+
+        # is this part of an iteration?
+        try:
+            iteration = getattr(getattr(artifact_obj, 'Iteration'), 'Name')
+        except AttributeError:
+            iteration = None
+
+        # tasks don't have 'ScheduleState' Attribute
+        try:
+            schedulestate = artifact_obj.ScheduleState
+        except AttributeError:
+            schedulestate = None
+
+        # do we have an owner? If so try a few ways to get the name
+        try:
+            owner = "%s %s" %\
+                (artifact_obj.Owner.FirstName, artifact_obj.Owner.LastName)
+            if owner == "None None":
+                owner = artifact_obj.Owner.DisplayName
+            if owner == None:
+                owner = artifact_obj.Owner.UserName
+        except AttributeError:
+            owner = None
 
         # build the return data
-        columns = ['Name', 'ID', 'Description', 'State', 'Tasks']
-        data = [name, artifact_obj.FormattedID, desc, state ,tasks]
+        columns = ['Name', 'ID', 'Iteration',
+                'Description', 'ScheduleState', 'State', 'Owner',  'Tasks']
+        data = [name, artifact_obj.FormattedID,
+                iteration, desc, schedulestate, state, owner, tasks]
 
         return (columns, data)
 
@@ -81,9 +108,9 @@ class BaseListCommand(Lister):
         parser.add_argument(
             '-l', '--limit',
             nargs='?',
-            const='Limit',
+            const='20',
             default='20',
-            help='Number of results to show'
+            help='Number of results to show (default=20)'
             )
         return parser
 
