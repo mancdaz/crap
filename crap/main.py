@@ -33,7 +33,7 @@ class Crap(App):
     def __init__(self):
         super(Crap, self).__init__(
                 description='crap rally cli',
-                version='VERSION',
+                version=VERSION,
                 command_manager=CommandManager('cliff.crap'),
                 )
 
