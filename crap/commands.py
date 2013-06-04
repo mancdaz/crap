@@ -101,6 +101,12 @@ class BaseListCommand(Lister):
         super(BaseListCommand, self).__init__(app, app_args)
         self.artifact_type = artifact_type
         self.limit = None
+        self.artifacts = None
+        self.query = None
+
+        # get the rally connection object (note this gets initialised in the
+        # initialize_app call in the main App class (Crap)
+        self.rally = self.app.rally
 
     def get_parser(self, prog_name):
 
@@ -126,6 +132,14 @@ class BaseListCommand(Lister):
             except:
                 self.log.warning('limit must be a number')
                 sys.exit(1)
+
+        # some debug output
+        self.log.debug('using query: %s' % self.query)
+        if self.limit: self.log.debug('showing first %s results' % self.limit)
+
+        # do the search
+        self.artifacts = utils.do_rally_query(
+            self.rally, self.artifact_type, query=self.query, limit=self.limit, fetch=True)
 #        state = parsed_args.state
 #        print state
 #
