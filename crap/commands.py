@@ -19,6 +19,13 @@ class BaseShowCommand(ShowOne):
     def get_parser(self, prog_name):
         parser = super(BaseShowCommand, self).get_parser(prog_name)
         parser.add_argument('artifact', nargs='?')
+        parser.add_argument(
+                '--full',
+                action='store_true',
+                default=False,
+                dest='full_description',
+                help='Show full description'
+                )
         return parser
 
     def take_action(self, parsed_args):
@@ -45,8 +52,11 @@ class BaseShowCommand(ShowOne):
             self.log.error("Could not find %s : %s" % (self.artifact_type, FormattedID))
             sys.exit(1)
 
-        # quickly and dirtily remove html elements if present
         desc = utils.strip_html(str(artifact_obj.Description))
+        if not parsed_args.full_description:
+            desc = utils.truncate_text(desc)
+
+        #desc = utils.strip_html(str(artifact_obj.Description))
 
         # get associated tasks by FormattedID and Name
         try:

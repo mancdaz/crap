@@ -65,6 +65,7 @@ setup(
             'defect-list = crap.defect:List',
             'story-show = crap.story:Show',
             'story-list = crap.story:List',
+            'iteration-show = crap.iteration:Show',
 #            'two_part = cliffdemo.simple:Simple',
 #            'error = cliffdemo.simple:Error',
 #            'list files = cliffdemo.list:Files',

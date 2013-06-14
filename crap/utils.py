@@ -32,8 +32,15 @@ def strip_html(text_to_clean):
     strip_pattern = '<[^<]+?>'
     stripped = textwrap.re.sub(strip_pattern, '', text_to_clean)
     wrapped = textwrap.fill(stripped, 70)
-    # truncate to 300 characters
-    if len(wrapped) > 300:
-        wrapped =  wrapped[:300] + '\n\n...output truncated'
+  # truncate to 300 characters
+#    if len(wrapped) > 300:
+#        wrapped =  wrapped[:300] + '\n\n...output truncated'
 
     return wrapped
+
+def truncate_text(text_to_truncate, truncate_length=300):
+    if len(text_to_truncate) > truncate_length:
+            truncated = text_to_truncate[:truncate_length] + \
+              '\n\n...output truncated'
+
+    return truncated

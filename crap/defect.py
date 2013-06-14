@@ -20,10 +20,10 @@ class List(BaseListCommand):
         parser.add_argument(
             '-s', '--state',
             nargs='?',
-            const='Open',
-            default='Open',
-            help='The state of the defects to list ([Open], Fixed, Submitted'
-            ' Closed, \'In Gating\', All'
+            const='all',
+            default='all',
+            help='The state of the defects to list ([All], Open, Fixed, Submitted'
+            ' Closed, \'In Gating\''
             )
         return parser
 
