@@ -2,7 +2,7 @@ from datetime import datetime
 from cliff.lister import Lister
 import logging
 import re
-#from crap import utils
+from crap import utils
 
 class Show(Lister):
     ''' Show all stories/tasks/defects in an iteration '''
@@ -43,8 +43,18 @@ class Show(Lister):
                 raise RuntimeError('could not get info about current iteration. '
                         ' Be sure there is currently an active iteration')
 
+        # now we know the iteration name, we can query on it
+        # get tasks for an iteration
+        query = 'Iteration.Name = "%s"' % iteration
+        result_obj = utils.do_rally_query(rally, 'Task', query=query)
+        # pull results into a list
+        tasks = [task for task in result_obj]
+        # pull necessary fields out of results
+        task_names = '\n'.join([task.Name for task in tasks])
+        task_IDs =  '\n'.join([task.FormattedID for task in tasks])
 
-        columns = ['Name']
-        data = [[iteration]]
+
+        columns = ['Name', 'Task ID', 'Task Name']
+        data = [[iteration, task_IDs, task_names]]
 
         return (columns, data)
